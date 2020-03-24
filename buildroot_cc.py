@@ -63,7 +63,7 @@ with open(f"{WORKSPACE_DIRECTORY}/compile_commands.json", "r") as f:
 
 for entry in compile_commands:
     if args.stubs_hard:
-        i = entry['arguments'].index("-c") + 1 # TODO: Make less hacky...
+        i = entry['arguments'].index("-c") + 2 # TODO: Make less hacky...
         entry['arguments'].insert(i, "-D__ARM_PCS_VFP")
 
     for buildroot_package, workspace_pakage in PACKAGES.items():
