@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(description='Creates a compile_commands.json fr
 parser.add_argument('-g', '--generate', action="store_true", help='Generates an example_conf.json configuration file')
 parser.add_argument('-c', '--config', type=str, help='Path to the configuration file')
 parser.add_argument('-d', '--dry', action="store_true", help='Only prints commands to be executed, does not execute them')
+parser.add_argument('--stubs-hard', action="store_true", help="Fix for clang trying to use gnu/stubs-soft.h when gnu/stubs-hard.h is available")
 args = parser.parse_args()
 
 DRY = args.dry
@@ -61,7 +62,10 @@ with open(f"{WORKSPACE_DIRECTORY}/compile_commands.json", "r") as f:
     compile_commands = json.load(f)
 
 for entry in compile_commands:
-    entry["directory"]: str
+    if args.stubs_hard:
+        i = entry['arguments'].index("-c") + 1 # TODO: Make less hacky...
+        entry['arguments'].insert(i, "-D__ARM_PCS_VFP")
+
     for buildroot_package, workspace_pakage in PACKAGES.items():
         entry['directory'] = re.sub(fr"{BUILDROOT_PATH}/.*?/{buildroot_package}-.*?/", f"{WORKSPACE_DIRECTORY}/{workspace_pakage}/", entry['directory'])
 
